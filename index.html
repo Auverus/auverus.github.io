@@ -23,18 +23,33 @@
         }
         .command {
             margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 15px;
         }
         .output {
             color: #a3be8c;
             margin-left: 10px;
+            font-weight: bold;
+            font-size: 15px;
         }
         input {
-            background-color: #222;
+            background-color: #2e3440;
             border: none;
-            color: #a3be8c;
+            color: #ffffff;
             font-family: monospace;
+            font-weight: bold;
             outline: none;
-            width: 95%;
+            font-size: 15px;
+            width:80%;
+        }
+        .intro  {
+            color: #81a1c1;
+            margin-left: 10px;
+            font-weight: bold;
+            font-size: 15px;
+        }
+        .label {
+            color: #ffffff;
         }
     </style>
 
@@ -42,60 +57,173 @@
 
 
 <link href="https://fonts.googleapis.com" rel="preconnect" ><link href="https://fonts.gstatic.com" rel="preconnect" crossorigin ></head>
-<body id="i2fu"><script>
-    let terminal = document.getElementById("i2fu");
+<body id="i2fu">
+    <script>
+        let terminal = document.getElementById("i2fu");
+        let currentInput = null;  // To track the current input element
+        // Function to create a new input line
+        function createCommandLine(first) {
+            let commandLine = document.createElement("div");
+            commandLine.classList.add("command");
+    
+            // Create a label for the command prompt
+            let label = document.createElement("label");
+            label.textContent = "auveurs@portfoliosite.net:~$ ";
+            commandLine.appendChild(label);
+    
+            // Create an input element for user input
+            let input = document.createElement("input");
+            input.type = "text";
+            input.onkeydown = function(event) {
+                if (event.key === "Enter") {
+                    handleCommand(input.value);
+                    commandLine.removeChild(input);
+                    label.textContent += input.value;
+                    createCommandLine(); // Create a new command line after Enter
+                }
+            };
+            commandLine.appendChild(input);
+            terminal.appendChild(commandLine);
+    
+            input.focus(); // Automatically focus on the input
+        }
+    
+    // Function to simulate streaming text output with a callback and handle newlines (\n) and spaces
+    function streamText(element, text, delay = 0.2, callback) {
+        let index = 0;
 
-    // Function to create a new input line
-    function createCommandLine() {
-        let commandLine = document.createElement("div");
-        commandLine.classList.add("command");
-
-        // Create a label for the command prompt
-        let label = document.createElement("label");
-        label.textContent = "> ";
-        commandLine.appendChild(label);
-
-        // Create an input element for user input
-        let input = document.createElement("input");
-        input.type = "text";
-        input.onkeydown = function(event) {
-            if (event.key === "Enter") {
-                handleCommand(input.value);
-                commandLine.removeChild(input);
-                label.textContent += input.value;
-                createCommandLine(); // Create a new command line after Enter
+        function typeCharacter() {
+            if (index < text.length) {
+                if (text[index] === '\n') {
+                    element.innerHTML += "<br>"; // Add a <br> for newline
+                } else if (text[index] === ' ') {
+                    element.innerHTML += "&nbsp;"; // Replace spaces with non-breaking spaces
+                } else {
+                    element.innerHTML += text[index]; // Append regular text character
+                }
+                index++;
+                setTimeout(typeCharacter, delay);  // Continue typing characters
+            } else if (callback) {
+                callback();  // Call the callback once all text is streamed
             }
-        };
-        commandLine.appendChild(input);
-        terminal.appendChild(commandLine);
-
-        input.focus(); // Automatically focus on the input
-    }
-
-    // Function to handle the command and display output
-    function handleCommand(command) {
-        let output = document.createElement("div");
-        output.classList.add("output");
-
-        // Simple response to user input
-        switch (command.toLowerCase()) {
-            case 'help':
-                output.textContent = "Available commands: help, echo, clear";
-                terminal.appendChild(output);
-                break;
-            case 'clear':
-                terminal.innerHTML = ""; // Clears the terminal
-                setTimeout(createCommandLine, 0); // Delay to prevent textbox after clear
-                return;
-            default:
-                output.textContent = "You typed: " + command;
-                terminal.appendChild(output);
         }
 
-        terminal.scrollTop = terminal.scrollHeight; // Scroll to bottom
-    }
+        typeCharacter();
+    }    
 
-    // Initialize the terminal with the first command line
-    createCommandLine();
-</script></body>
+    
+    // Function to simulate streaming effect for each line with a delay between lines
+    function streamLines(element, text, delay = 500, callback) {
+        const lines = text.split("\n"); // Split the text by newlines
+        let index = 0;
+
+        function displayLine() {
+            if (index < lines.length) {
+                let line = lines[index].replace(/ /g, '&nbsp;');  // Replace spaces with non-breaking spaces
+                element.innerHTML += line + "<br>";  // Add the full line and a <br> tag
+                index++;
+                terminal.scrollTop = terminal.scrollHeight; // Scroll to bottom after each line
+                setTimeout(displayLine, delay); // Wait before displaying the next line
+            } else if (callback) {
+                callback(); // Once all lines are displayed, trigger the callback
+            }
+        }
+
+        displayLine(); // Start displaying the lines
+    }
+    
+        
+                            // Function to display the introduction message
+        function displayIntroduction(callback) {
+            let intro = document.createElement("div");
+            intro.classList.add("intro");
+
+            // Introduction message
+            //let introText = "Welcome to Steve's Portfolio Site!\nType 'help' to get started.";
+            let introText = `
+                   =#######+.                     auverus@portfoliosite.net                                                                           
+              ###################.                --------------------------                                            
+          .#########################:             Name: Steve Lu                                  
+        .#################.      *####*           Email: stevelu35@gmail.com                                                                               
+       ################           +**###.         Type "help" for a list of commands.                                           
+     =###############+           -****####                                                                           
+    ################+     ########*****####       @-.@ @@ @..  %=%* .# *  =                                                 
+   +################     ##########*****####                                                                                
+   #################    :##########*****####:     %#     ..   =        +#@=..+       .                                      
+  ##################    :##########*****#####     @@*#@@@-.  +#+@: *..%+@%@@** %=..@**  *+@*%@                              
+  ##################    :#########******#####     @-*        @.             # #.%.%: #:%.# : #                              
+  ##################     ######********######:      *@@@@@@@ *@:#:   +.+- . :.--*-#--%+--..  :                              
+  #######****                  ******########-    %.* :     #-         .     @.  .         .%     -#:  -        #=          
+  #####******.                 ****##########    .-@*-: ..  *@@@@@%@@@%*--% .-*=-...  .... = .* *. .@= ... %%@- -   . : .   
+  ###*******########    :####################     = * :     :.             -:            -         :       .%               
+  ###*****##########    :###################+    ..@*:: .   -*@::: .  ..:. @:...  +::       .  +.:#:* - .  .@.*  . .:+.%    
+  ##*****###########    :###################                                                                                
+  ##*****###########    :##################                                                                                 
+  ##******#########     ##################                                                                                  
+  ###******######:     .################*                                                                                   
+  ####****.           *################                                                                                     
+  ######**          -################   .=                                                                                  
+  ##########:   -#################                                                                                         
+    #########################:                  
+            `;
+            streamLines(intro, introText, 5, callback);
+
+            terminal.appendChild(intro);
+            terminal.scrollTop = terminal.scrollHeight; // Scroll to bottom
+
+        }
+        // Function to handle the command and display output
+        function handleCommand(command) {
+            let output = document.createElement("div");
+            output.classList.add("output");
+    
+            // Simple response to user input
+            switch (command.toLowerCase()) {
+                case 'help':
+                    streamText(output, "Available commands: help, echo, clear, about, secret, and more...");
+                    terminal.appendChild(output);
+                    break;
+                case 'clear':
+                    terminal.innerHTML = ""; // Clears the terminal
+//                    createCommandLine(); // Show intro when site loads
+                    return;
+                case 'about':
+                    displayIntroduction(); // Show intro when site loads
+                    return;
+                case 'neofetch':
+                    output.textContent = "Nice!!! You found a new command for intro";
+                    terminal.appendChild(output);
+                    displayIntroduction(); // Show intro when site loads
+                    return;
+                default:
+                    streamText(output, "Invalid command: " + command);
+                    terminal.appendChild(output);
+            }
+    
+            terminal.scrollTop = terminal.scrollHeight; // Scroll to bottom
+        }
+    // Focus on the current input when the page is focused or visible again
+    function focusOnInput() {
+        currentInput = document.querySelector("input");
+        if (currentInput) {
+            currentInput.focus(); // Automatically focus on the current input field
+        }
+    }
+    // Event listener to keep the input focused on the current input when the page or terminal is clicked
+    window.addEventListener("focus", focusOnInput);
+    document.addEventListener("visibilitychange", function() {
+        if (!document.hidden) {
+            focusOnInput();
+        }
+    });
+
+    // Ensure input is focused when clicking anywhere on the page
+    document.addEventListener("click", function() {
+        focusOnInput();
+    });
+        // Initialize the terminal with the first command line
+        displayIntroduction(createCommandLine); // Show intro when site loads
+//        createCommandLine();
+
+    </script></body>
 </html>
