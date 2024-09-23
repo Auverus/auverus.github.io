@@ -8,7 +8,7 @@
     <title>Terminal Simulator</title>
     <style>
         body {
-            background-color: #222;
+            background-color: #2e3440;
             color: #a3be8c;
             font-family: monospace;
         }
@@ -16,10 +16,10 @@
             width: 80%;
             margin: 20px auto;
             padding: 10px;
-            border: 2px solid #00ff00;
+            border: 2px solid #a3be8c;
             height: 500px;
             overflow-y: auto;
-            background-color: #000;
+            background-color: #2e3440;
         }
         .command {
             margin-bottom: 5px;
@@ -81,16 +81,17 @@
         switch (command.toLowerCase()) {
             case 'help':
                 output.textContent = "Available commands: help, echo, clear";
+                terminal.appendChild(output);
                 break;
             case 'clear':
                 terminal.innerHTML = ""; // Clears the terminal
-                createCommandLine(); // Create a new command line
+                setTimeout(createCommandLine, 0); // Delay to prevent textbox after clear
                 return;
             default:
                 output.textContent = "You typed: " + command;
+                terminal.appendChild(output);
         }
-        
-        terminal.appendChild(output);
+
         terminal.scrollTop = terminal.scrollHeight; // Scroll to bottom
     }
 
