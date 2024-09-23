@@ -31,6 +31,7 @@
             margin-left: 10px;
             font-weight: bold;
             font-size: 15px;
+            animation: typing 0.5s steps(30, end);
         }
         ::selection {
             color: #4c566a;
@@ -142,29 +143,36 @@
     }
 
     // Function to simulate streaming text output with a callback and handle newlines (\n) and spaces
-    function streamText(element, text, delay = 5, callback) {
+    function streamText(element, text, delay = 50, callback) {
+        // Break the text into tokens using regex to identify special formatting (like links, colors)
+        const tokens = text.match(/(\*link:[^*]*\*[^*]*\*end\*|\*color:[^*]*\*[^*]*\*end\*|\*shadow\*[^*]*\*end\*|[^\*]+)/g);
+
         let index = 0;
 
-        function typeCharacter() {
-            if (index < text.length) {
-                if (text[index] === '\n') {
-                    element.innerHTML += "<br>"; // Add a <br> for newline
-                } else if (text[index] === ' ') {
-                    element.innerHTML += "&nbsp;"; // Replace spaces with non-breaking spaces
+        function typeToken() {
+            if (index < tokens.length) {
+                let token = tokens[index];
+                // Handle the token: if it matches a special pattern, apply formatting
+                if (token.startsWith("*")) {
+                    token = applySpecialFormatting(token);  // Apply special formatting to tokens
                 } else {
-                    let char = text[index];
-                    // Handle special formatting as we type
-                    char = applySpecialFormatting(char);
-                    element.innerHTML += char; // Append regular text character
+                    token = token.replace(/ /g, "&nbsp;");  // Handle spaces
                 }
+
+                // Temporarily create a div to convert the token into individual characters
+                let tempDiv = document.createElement('div');
+                tempDiv.innerHTML = token;
+                let formattedToken = tempDiv.innerHTML;
+
+                element.innerHTML += formattedToken; // Append the formatted token
                 index++;
-                setTimeout(typeCharacter, delay);  // Continue typing characters
+                setTimeout(typeToken, delay);
             } else if (callback) {
                 callback();  // Call the callback once all text is streamed
             }
         }
 
-        typeCharacter();
+        typeToken(); // Start streaming the tokens
     }
         
                             // Function to display the introduction message
@@ -214,7 +222,7 @@
             // Simple response to user input
             switch (command.toLowerCase()) {
                 case 'help':
-                    streamText(output, "Available commands: help, echo, clear, about, secret, and more...");
+                    streamText(output, "Available commands: *shadow*help, echo, clear, about, secret,*end* and more...");
                     terminal.appendChild(output);
                     break;
                 case 'clear':
