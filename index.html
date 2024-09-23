@@ -32,6 +32,10 @@
             font-weight: bold;
             font-size: 15px;
         }
+        ::selection {
+            color: #4c566a;
+            background-color: #e5e9f0;
+        }
         input {
             background-color: #2e3440;
             border: none;
@@ -50,6 +54,24 @@
         }
         .label {
             color: #ffffff;
+        }
+        .red-text {
+            color: #bf616a;
+        }
+        .white-text {
+            color: white;
+        }
+        .shadow-text {
+            text-shadow: 0 0 5px #acced0;        }
+        a {
+            color: #eceff4; /* Default color for links */
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            transition: color 0.3s ease, text-decoration-thickness 0.3s ease;
+        }
+        a:hover {
+            color: #d8dee9; /* Lighter green on hover */
+            text-decoration-thickness: 2px; /* Thicker underline on hover */
         }
     </style>
 
@@ -87,31 +109,17 @@
     
             input.focus(); // Automatically focus on the input
         }
-    
-    // Function to simulate streaming text output with a callback and handle newlines (\n) and spaces
-    function streamText(element, text, delay = 0.2, callback) {
-        let index = 0;
-
-        function typeCharacter() {
-            if (index < text.length) {
-                if (text[index] === '\n') {
-                    element.innerHTML += "<br>"; // Add a <br> for newline
-                } else if (text[index] === ' ') {
-                    element.innerHTML += "&nbsp;"; // Replace spaces with non-breaking spaces
-                } else {
-                    element.innerHTML += text[index]; // Append regular text character
-                }
-                index++;
-                setTimeout(typeCharacter, delay);  // Continue typing characters
-            } else if (callback) {
-                callback();  // Call the callback once all text is streamed
-            }
+        // Function to apply styles based on special markup
+        function applySpecialFormatting(text) {
+            // Replace *color:red*...*end* with <span class="red-text">...</span>
+            text = text.replace(/\*color:red\*(.*?)\*end\*/g, '<span class="red-text">$1</span>');
+            text = text.replace(/\*color:white\*(.*?)\*end\*/g, '<span class="white-text">$1</span>');
+            text = text.replace(/\*link:(.*?)\*(.*?)\*end\*/g, '<a href="$1" target="_blank">$2</a>');
+            // Replace *shadow*...*end* with <span class="shadow-text">...</span>
+            text = text.replace(/\*shadow\*(.*?)\*end\*/g, '<span class="shadow-text">$1</span>');
+            
+            return text;
         }
-
-        typeCharacter();
-    }    
-
-    
     // Function to simulate streaming effect for each line with a delay between lines
     function streamLines(element, text, delay = 500, callback) {
         const lines = text.split("\n"); // Split the text by newlines
@@ -120,6 +128,7 @@
         function displayLine() {
             if (index < lines.length) {
                 let line = lines[index].replace(/ /g, '&nbsp;');  // Replace spaces with non-breaking spaces
+                line = applySpecialFormatting(line);  // Apply special formatting
                 element.innerHTML += line + "<br>";  // Add the full line and a <br> tag
                 index++;
                 terminal.scrollTop = terminal.scrollHeight; // Scroll to bottom after each line
@@ -131,7 +140,32 @@
 
         displayLine(); // Start displaying the lines
     }
-    
+
+    // Function to simulate streaming text output with a callback and handle newlines (\n) and spaces
+    function streamText(element, text, delay = 5, callback) {
+        let index = 0;
+
+        function typeCharacter() {
+            if (index < text.length) {
+                if (text[index] === '\n') {
+                    element.innerHTML += "<br>"; // Add a <br> for newline
+                } else if (text[index] === ' ') {
+                    element.innerHTML += "&nbsp;"; // Replace spaces with non-breaking spaces
+                } else {
+                    let char = text[index];
+                    // Handle special formatting as we type
+                    char = applySpecialFormatting(char);
+                    element.innerHTML += char; // Append regular text character
+                }
+                index++;
+                setTimeout(typeCharacter, delay);  // Continue typing characters
+            } else if (callback) {
+                callback();  // Call the callback once all text is streamed
+            }
+        }
+
+        typeCharacter();
+    }
         
                             // Function to display the introduction message
         function displayIntroduction(callback) {
@@ -141,12 +175,12 @@
             // Introduction message
             //let introText = "Welcome to Steve's Portfolio Site!\nType 'help' to get started.";
             let introText = `
-                   =#######+.                     auverus@portfoliosite.net                                                                           
+                   =#######+.                     *shadow*auverus@portfoliosite.net*end*                                                                           
               ###################.                --------------------------                                            
           .#########################:             Name: Steve Lu                                  
-        .#################.      *####*           Email: stevelu35@gmail.com                                                                               
-       ################           +**###.         Type "help" for a list of commands.                                           
-     =###############+           -****####                                                                           
+        .#################.      *####*           Email: stevelu35@gmail.com                                                    
+       ################           +**###.         Type "*color:red*help*end*" for a list of commands.                           
+     =###############+           -****####        Type "*color:red*gui*end*" or click *link:https://www.youtube.com/watch?v=dQw4w9WgXcQ*here*end* if you don't want to use the terminal
     ################+     ########*****####       @-.@ @@ @..  %=%* .# *  =                                                 
    +################     ##########*****####                                                                                
    #################    :##########*****####:     %#     ..   =        +#@=..+       .                                      
@@ -191,10 +225,42 @@
                     displayIntroduction(); // Show intro when site loads
                     return;
                 case 'neofetch':
-                    output.textContent = "Nice!!! You found a new command for intro";
+                    output.textContent = "*color:white*ok linux user*end*";
                     terminal.appendChild(output);
                     displayIntroduction(); // Show intro when site loads
                     return;
+                case 'secret':
+                    streamText(output, "What do you expect? -_-");
+                    terminal.appendChild(output);
+                    setTimeout(function() {
+                        window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // Redirect to Rick Roll
+                    }, 1000); // Wait for 2 seconds before redirecting
+                    break;
+                case 'gui':
+                    streamText(output, "It isn't even implement yet! noob! -_-"); // Display a message
+                    terminal.appendChild(output);
+                    setTimeout(function() {
+                        window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // Redirect to Rick Roll
+                    }, 1000); // Wait for 2 seconds before redirecting
+                    break;
+                case 'schlecht':
+                    streamText(output, "O neine!");
+                    terminal.appendChild(output);
+                    break;
+                case 'sehr gut':
+                    streamText(output, "Indeed!");
+                    terminal.appendChild(output);
+                    break;
+                case command.toLowerCase().match(/arch/)?.input:
+                    streamText(output, "O.K. go and touch grass");
+                    terminal.appendChild(output);
+                    break;
+                case command.match(/^echo /)?.input:
+                    //echo the string after the command
+                    let echoText = command.slice(5);
+                    streamText(output, echoText);
+                    terminal.appendChild(output);
+                    break;
                 default:
                     streamText(output, "Invalid command: " + command);
                     terminal.appendChild(output);
