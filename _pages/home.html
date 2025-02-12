@@ -4,33 +4,72 @@ title: "home"
 permalink: /home/
 author_profile: false
 ---
+<section id="hero">
+  <div class="container">
+    <h1>Welcome to My Portfolio</h1>
+    <p>Hi, I'm [Your Name], a [Your Profession].</p>
+    <a href="#about" class="btn">Learn More About Me</a>
+  </div>
+</section>
 
-{% if site.author.googlescholar %}
-  <div class="wordwrap">You can also find my articles on <a href="{{site.author.googlescholar}}">my Google Scholar profile</a>.</div>
-{% endif %}
+<section id="about">
+  <div class="container">
+    <h2>About Me</h2>
+    <p>[A brief introduction about yourself]</p>
+  </div>
+</section>
 
-{% include base_path %}
+<section id="projects">
+  <div class="container">
+    <h2>Projects</h2>
+    <div class="project">
+      <h3>Project 1</h3>
+      <p>[Description of Project 1]</p>
+    </div>
+    <div class="project">
+      <h3>Project 2</h3>
+      <p>[Description of Project 2]</p>
+    </div>
+    <!-- Add more projects as needed -->
+  </div>
+</section>
 
-<!-- New style rendering if publication categories are defined -->
-{% if site.publication_category %}
-  {% for category in site.publication_category  %}
-    {% assign title_shown = false %}
-    {% for post in site.publications reversed %}
-      {% if post.category != category[0] %}
-        {% continue %}
-      {% endif %}
-      {% unless title_shown %}
-        <h2>{{ category[1].title }}</h2><hr />
-        {% assign title_shown = true %}
-      {% endunless %}
-      {% include archive-single.html %}
-    {% endfor %}
-  {% endfor %}
-{% else %}
-  {% for post in site.publications reversed %}
-    {% include archive-single.html %}
-  {% endfor %}
-{% endif %}
+<section id="contact">
+  <div class="container">
+    <h2>Contact</h2>
+    <p>If you'd like to get in touch, please email me at <a href="mailto:your.email@example.com">your.email@example.com</a>.</p>
+  </div>
+</section>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+  }
+  .container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+  }
+  #hero {
+    background: #333;
+    color: #fff;
+    padding: 100px 0;
+    text-align: center;
+  }
+  #hero .btn {
+    background: #e8491d;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+  }
+  section {
+    padding: 20px 0;
+  }
+  .project {
+    margin-bottom: 20px;
+  }
+</style>
 
 
 
