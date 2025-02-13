@@ -4,11 +4,15 @@ title: "home"
 permalink: /
 author_profile: false
 ---
+
 <section id="hero">
-  <div id="threejs-container"></div>
+  <!-- Three.js container -->
+  <div class='threejs'>
+    <div id='cube'></div>
+</div>
   <div class="container">
     <h1>Welcome to My Portfolio</h1>
-    <p>Hi, I'm [Your Name], a [Your Profession].</p>
+    <p>Hi, I'm Steve, a professional-dumbass.</p>
     <a href="#about" class="btn">Learn More About Me</a>
   </div>
 </section>
@@ -31,15 +35,15 @@ author_profile: false
       <h3>Project 2</h3>
       <p>[Description of Project 2]</p>
     </div>
-    <!-- Add more projects as needed -->
   </div>
 </section>
 
 <section id="contact">
   <div class="container">
     <h2>Contact</h2>
-    <p>If you'd like to get in touch, please email me at <a
-        href="mailto:your.email@example.com">your.email@example.com</a>.</p>
+    <p>If you'd like to get in touch, please email me at
+      <a href="mailto:your.email@example.com">your.email@example.com</a>.
+    </p>
   </div>
 </section>
 
@@ -58,18 +62,44 @@ author_profile: false
     position: relative;
     z-index: 1;
   }
-
+  .threejs {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+  }
+  .threejs > * {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  [style*="--aspect-ratio"] > * {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+  }
   #hero {
-    background: #333;
-    color: #fff;
+    position: relative;
     height: 100vh;
+    overflow: hidden;
+    text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
+    background: transparent;
+    background: url("https://images.pexels.com/photos/346529/pexels-photo-346529.jpeg?cs=srgb&dl=pexels-bri-schneiter-28802-346529.jpg&fm=jpg") no-repeat center center;
+    color: #fff;
+  }
+
+  #hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
   }
 
   #hero .btn {
@@ -77,15 +107,6 @@ author_profile: false
     color: #fff;
     padding: 10px 20px;
     text-decoration: none;
-  }
-
-  #threejs-container {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 0;
   }
 
   section {
@@ -97,36 +118,31 @@ author_profile: false
   }
 </style>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- Include Three.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
 <script>
-  // Initialize Three.js
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  const container = document.getElementById('threejs-container');
-  window.addEventListener('resize', () => {
-    camera.aspecxt = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  });
-
-  // Add a rotating cube
-  const geometry = new THREE.BoxGeometry();
-  const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-  const cube = new THREE.Mesh(geometry, material);
-  scene.add(cube);
-
-  camera.position.z = 5;
-  // Initialize renderer
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  container.appendChild(renderer.domElement);
-  function animate() {
-    requestAnimationFrame(animate);
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
-    renderer.render(scene, camera);
-  }
-  animate();
+  var container = document.getElementById('cube');
+var width = container.clientWidth;
+var height = container.clientHeight;
+scene = new THREE.Scene();
+scene.background = new THREE.Color(0xffffff);
+geometry = new THREE.BoxGeometry(1, 1, 1);
+material = new THREE.MeshNormalMaterial();
+mesh = new THREE.Mesh(geometry, material);
+scene.add(mesh);
+camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 10);
+camera.position.z = 2;
+// renderer
+renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(width, height);
+container.appendChild(renderer.domElement);
+// animation
+function animate() {
+  requestAnimationFrame(animate);
+  mesh.rotation.x += 0.005;
+  mesh.rotation.y += 0.01;
+  renderer.render(scene, camera);
+}
+animate();
 </script>
